@@ -1,13 +1,11 @@
 # TraceShare Learning Map
 
-This file maps the main pieces of the TraceShare MVP and explains what each one does.
+This file maps the main pieces of the project and explains what each one does.
 
 ## Product Flow
-
-TraceShare lets an engineer upload a debugging artifact, stores the artifact file and metadata, generates a short code, and exposes everything through a short URL.
+TraceShare lets oen upload a debugging artifact, stores the artifact file and metadata, generates a short code and exposes everything through a short URL.
 
 Example flow:
-
 ```text
 Upload file + metadata
   -> store metadata in PostgreSQL
@@ -18,26 +16,23 @@ Upload file + metadata
 ```
 
 ## Root Files
-
 | File | Purpose |
 | --- | --- |
-| `README.md` | User-facing project overview, run instructions, and API examples. |
 | `go.mod` / `go.sum` | Go module definition and dependency lock data. |
 | `Dockerfile` | Builds the Go service into a small container image. |
-| `docker-compose.yml` | Runs the full local stack: app, PostgreSQL, Redis, and MinIO. |
+| `docker-compose.yml` | Runs the full local stack: app, PostgreSQL, Redis and MinIO. |
 | `.dockerignore` | Keeps unnecessary files out of the Docker build context. |
 | `frontend/` | React, TypeScript, Vite, Tailwind CSS frontend. |
-| `learning.md` | This map of what was built. |
 
 ## Frontend
 
 | Path | Purpose |
 | --- | --- |
-| `frontend/src/App.tsx` | Small route controller for dashboard, upload, details, and search views. |
-| `frontend/src/api/client.ts` | Fetch-based API integration layer for upload, lookup, and search. |
+| `frontend/src/App.tsx` | route controller for dashboard, upload, details and search views. |
+| `frontend/src/api/client.ts` | Fetch based API integration layer for upload, lookup and search. |
 | `frontend/src/api/types.ts` | TypeScript types matching the Go API responses. |
-| `frontend/src/components/` | Shared app shell, tables, search box, state views, and shadcn-style UI primitives. |
-| `frontend/src/pages/dashboard.tsx` | Dashboard with project title, upload action, search, and recent artifacts. |
+| `frontend/src/components/` | Shared app shell, tables, search box, state views and shadcn-style UI primitives. |
+| `frontend/src/pages/dashboard.tsx` | Dashboard with project title, upload action, search and recent artifacts. |
 | `frontend/src/pages/upload.tsx` | Upload form for metadata, expiration policy, and file selection. |
 | `frontend/src/pages/artifact-details.tsx` | Metadata, share URL, copy link, download, expiration status, and preview. |
 | `frontend/src/pages/search-results.tsx` | Search results list with title, type, service, created date, and preview snippet. |
@@ -60,7 +55,7 @@ http://localhost:8080
 
 | Path | Purpose |
 | --- | --- |
-| `cmd/server/main.go` | Starts the HTTP server, connects to PostgreSQL, Redis, and MinIO, registers routes, and starts the expiration cleanup worker. |
+| `cmd/server/main.go` | Starts the HTTP server, connects to PostgreSQL, Redis and MinIO, registers routes and starts the expiration cleanup worker. |
 
 ## Configuration
 
@@ -85,11 +80,10 @@ Important environment variables:
 
 | Path | Purpose |
 | --- | --- |
-| `internal/domain/artifact.go` | Defines the core `Artifact` model, allowed artifact types, upload input validation, and expiration policy logic. |
+| `internal/domain/artifact.go` | Defines the core `Artifact` model, allowed artifact types, upload input validation and expiration policy logic. |
 | `internal/domain/artifact_test.go` | Tests expiration and artifact validation behavior. |
 
 Supported artifact types:
-
 - `stack_trace`
 - `log`
 - `api_payload`
@@ -97,20 +91,17 @@ Supported artifact types:
 - `screenshot`
 
 Supported expiration policies:
-
 - `7d`
 - `14d`
 - `never`
 
 ## Use Case Layer
-
 | Path | Purpose |
 | --- | --- |
-| `internal/app/service.go` | Contains the main application workflow: create artifact, get by short code, download, search, decorate URLs, normalize tags, and generate short codes. |
-| `internal/app/service_test.go` | Tests the artifact creation workflow with fake repository, storage, and cache implementations. |
+| `internal/app/service.go` | Contains the main application workflow: create artifact, get by short code, download, search, decorate URLs, normalize tags and generate short codes. |
+| `internal/app/service_test.go` | Tests the artifact creation workflow with fake repository, storage and cache implementations. |
 
 Key responsibilities:
-
 - Validate upload metadata.
 - Enforce the 25 MB upload limit.
 - Generate a six-character short code.
@@ -121,13 +112,11 @@ Key responsibilities:
 - Hide expired artifacts.
 
 ## HTTP Handler Layer
-
 | Path | Purpose |
 | --- | --- |
 | `internal/httpapi/handler.go` | Defines REST endpoints and the simple HTML web UI. |
 
 Routes:
-
 | Route | Method | Purpose |
 | --- | --- | --- |
 | `/` | `GET` | Upload/search web UI. |
@@ -135,17 +124,15 @@ Routes:
 | `/api/artifacts` | `POST` | Upload an artifact and create a short link. |
 | `/api/artifacts/{shortCode}` | `GET` | Fetch artifact metadata. |
 | `/api/artifacts/{shortCode}/download` | `GET` | Download the stored artifact file. |
-| `/api/search` | `GET` | Search artifacts by query, service, or tag. |
-| `/t/{shortCode}` | `GET` | Human-readable short-link page. |
+| `/api/search` | `GET` | Search artifacts by query, service or tag. |
+| `/t/{shortCode}` | `GET` | short-link page. |
 
 ## Repository Layer
-
 | Path | Purpose |
 | --- | --- |
 | `internal/db/artifact_store.go` | PostgreSQL implementation for creating, finding, searching, listing expired, and deleting artifact rows. |
 
 Search supports:
-
 - Title text
 - Service name
 - Tags
@@ -153,18 +140,15 @@ Search supports:
 - Artifact preview text
 
 ## Cache Layer
-
 | Path | Purpose |
 | --- | --- |
 | `internal/cache/store.go` | Redis cache implementation for short-code artifact lookups. |
-
 The cache stores internal artifact data, including the MinIO object key, while public API responses still hide the object key.
 
 ## Object Storage Layer
-
 | Path | Purpose |
 | --- | --- |
-| `internal/storage/store.go` | MinIO implementation for saving, reading, deleting files, and creating the bucket if needed. |
+| `internal/storage/store.go` | MinIO implementation for saving, reading, deleting files and creating the bucket if needed. |
 
 Artifact files are stored in MinIO under keys like:
 
@@ -173,19 +157,16 @@ artifacts/2026/06/16/{artifactID}.log
 ```
 
 ## Background Worker
-
 | Path | Purpose |
 | --- | --- |
-| `internal/worker/cleaner.go` | Periodically finds expired artifacts, deletes their MinIO objects, and removes their PostgreSQL rows. |
+| `internal/worker/cleaner.go` | Periodically finds expired artifacts, deletes their MinIO objects and removes their PostgreSQL rows. |
 
 ## Database
-
 | Path | Purpose |
 | --- | --- |
 | `migrations/001_init.sql` | Creates the `artifacts` table and indexes. |
 
 The `artifacts` table stores:
-
 - Short code
 - Title
 - Description
@@ -202,7 +183,6 @@ The `artifacts` table stores:
 - Generated PostgreSQL search document
 
 ## Local Deployment
-
 `docker-compose.yml` starts:
 
 | Service | Purpose |
@@ -225,7 +205,6 @@ http://localhost:8080
 ```
 
 ## Verification Done
-
 The Go test suite passed with:
 
 ```powershell
@@ -237,8 +216,6 @@ Docker Compose configuration was validated with:
 ```powershell
 docker compose config
 ```
-
-The stack was not started because Docker Desktop was not running on this machine.
 
 The frontend was checked with:
 
