@@ -1,0 +1,10 @@
+.git
+.idea
+.vscode
+tmp
+bin
+dist
+*.log
+frontend/node_modules
+frontend/dist
+frontend/.vite
