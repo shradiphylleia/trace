@@ -90,7 +90,7 @@ export function UploadPage({ onUploaded, onCancel }: UploadPageProps) {
                 <Input name="environment" required placeholder="staging" />
               </Field>
               <Field label="Creator">
-                <Input name="creator" required placeholder="you@oracle.com" />
+                <Input name="creator" required placeholder="shraddha@sharma.com" />
               </Field>
               <Field label="Expiration policy">
                 <Select value={expiration} onChange={(event) => setExpiration(event.target.value as ExpirationPolicy)}>

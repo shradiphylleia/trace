@@ -1,0 +1,10 @@
+java.lang.RuntimeException: Unable to complete reservation
+        at com.company.booking.ReservationService.confirmReservation(ReservationService.java:147)
+        at com.company.booking.ReservationController.create(ReservationController.java:63)
+Caused by: java.lang.IllegalStateException: No inventory available for selected slot
+
+request_id=req_92ac
+service=reservations
+environment=staging
+reservation_id=RES-10023
+user_flow=reservation_checkout

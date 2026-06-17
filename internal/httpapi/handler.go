@@ -223,7 +223,7 @@ var homeTemplate = template.Must(template.New("home").Parse(`<!doctype html>
             </select>
           </label>
           <label>Environment <input name="environment" required placeholder="staging"></label>
-          <label>Creator <input name="creator" required placeholder="you@oracle.com"></label>
+          <label>Creator <input name="creator" required placeholder="shraddha@sharma.com"></label>
           <label>Expiration
             <select name="expiration">
               <option value="7d">7 days</option>
