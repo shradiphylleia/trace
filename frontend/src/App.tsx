@@ -63,7 +63,7 @@ export default function App() {
     setRecentLoading(true);
     searchArtifacts({ limit: 8 })
       .then((items) => {
-        if (!ignore) setRecentArtifacts(items);
+        if (!ignore) setRecentArtifacts(items??[]);
       })
       .catch(() => {
         if (!ignore) setRecentArtifacts([]);

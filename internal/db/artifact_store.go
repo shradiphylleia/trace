@@ -58,7 +58,7 @@ func (s *ArtifactStore) Search(ctx context.Context, filter app.SearchFilter) ([]
 	}
 	defer rows.Close()
 
-	var artifacts []domain.Artifact
+	artifacts:= make([]domain.Artifact, 0)
 	for rows.Next() {
 		artifact, err := scanArtifact(rows)
 		if err != nil {

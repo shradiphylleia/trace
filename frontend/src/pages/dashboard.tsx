@@ -16,6 +16,8 @@ type DashboardPageProps = {
 };
 
 export function DashboardPage({ artifacts, loading, onSearch, onOpenArtifact, onUpload }: DashboardPageProps) {
+  const visibleArtifacts=artifacts??[];
+
   return (
     <>
       <PageHeader
@@ -41,13 +43,13 @@ export function DashboardPage({ artifacts, loading, onSearch, onOpenArtifact, on
       <section className="grid gap-3">
         <div className="flex items-center justify-between">
           <h3 className="text-base font-semibold">Recent artifacts</h3>
-          <span className="text-sm text-muted-foreground">{artifacts.length} shown</span>
+          <span className="text-sm text-muted-foreground">{visibleArtifacts.length} shown</span>
         </div>
         {loading && <LoadingState label="Loading recent artifacts" />}
-        {!loading && artifacts.length === 0 && (
+        {!loading && visibleArtifacts.length === 0 && (
           <EmptyState title="No artifacts yet" description="Upload the first trace, log, payload, report, or screenshot to create a shareable link." />
         )}
-        {!loading && artifacts.length > 0 && <ArtifactTable artifacts={artifacts} onOpenArtifact={onOpenArtifact} />}
+        {!loading && visibleArtifacts.length > 0 && <ArtifactTable artifacts={visibleArtifacts} onOpenArtifact={onOpenArtifact} />}
       </section>
     </>
   );

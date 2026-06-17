@@ -3,8 +3,9 @@ import type { Artifact, SearchArtifactsParams, UploadArtifactInput, UploadArtifa
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "";
 
 type SearchResponse = {
-  items: Artifact[];
+  items: Artifact[]|null;
 };
+// api responsive even if nothing
 
 export class ApiError extends Error {
   status: number;
@@ -39,7 +40,7 @@ export async function searchArtifacts(params: SearchArtifactsParams = {}) {
   if (params.limit) query.set("limit", String(params.limit));
 
   const response = await request<SearchResponse>(`/api/search?${query.toString()}`);
-  return response.items;
+  return response.items ?? [];
 }
 
 export async function getArtifact(shortCode: string) {
