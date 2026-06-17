@@ -3,7 +3,15 @@ CREATE TABLE IF NOT EXISTS artifacts (
     short_code text NOT NULL UNIQUE,
     title text NOT NULL,
     description text NOT NULL DEFAULT '',
-    artifact_type text NOT NULL CHECK (artifact_type IN ('stack_trace', 'log', 'api_payload', 'validation_report', 'screenshot')),
+    artifact_type text NOT NULL CHECK (
+        artifact_type IN (
+            'stack_trace',
+            'log',
+            'api_payload',
+            'validation_report',
+            'screenshot'
+        )
+    ),
     service_name text NOT NULL,
     environment text NOT NULL,
     tags text[] NOT NULL DEFAULT '{}',
@@ -15,16 +23,39 @@ CREATE TABLE IF NOT EXISTS artifacts (
     created_at timestamptz NOT NULL DEFAULT now(),
     expires_at timestamptz,
     preview text NOT NULL DEFAULT '',
-    search_document tsvector GENERATED ALWAYS AS (
-        setweight(to_tsvector('simple', coalesce(title, '')), 'A') ||
-        setweight(to_tsvector('simple', coalesce(service_name, '')), 'A') ||
-        setweight(to_tsvector('simple', coalesce(array_to_string(tags, ' '), '')), 'B') ||
-        setweight(to_tsvector('simple', coalesce(description, '')), 'C') ||
-        setweight(to_tsvector('simple', coalesce(preview, '')), 'D')
-    ) STORED
+    search_document tsvector
 );
 
-CREATE INDEX IF NOT EXISTS idx_artifacts_service_name ON artifacts (service_name);
-CREATE INDEX IF NOT EXISTS idx_artifacts_tags ON artifacts USING gin (tags);
-CREATE INDEX IF NOT EXISTS idx_artifacts_search ON artifacts USING gin (search_document);
-CREATE INDEX IF NOT EXISTS idx_artifacts_expires_at ON artifacts (expires_at) WHERE expires_at IS NOT NULL;
+CREATE OR REPLACE FUNCTION artifacts_search_document_update()
+RETURNS trigger AS $$
+BEGIN
+    NEW.search_document :=
+        setweight(to_tsvector('simple', coalesce(NEW.title, '')), 'A') ||
+        setweight(to_tsvector('simple', coalesce(NEW.service_name, '')), 'A') ||
+        setweight(to_tsvector('simple', coalesce(array_to_string(NEW.tags, ' '), '')), 'B') ||
+        setweight(to_tsvector('simple', coalesce(NEW.description, '')), 'C') ||
+        setweight(to_tsvector('simple', coalesce(NEW.preview, '')), 'D');
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_artifacts_search_document
+BEFORE INSERT OR UPDATE
+ON artifacts
+FOR EACH ROW
+EXECUTE FUNCTION artifacts_search_document_update();
+
+CREATE INDEX IF NOT EXISTS idx_artifacts_service_name
+ON artifacts (service_name);
+
+CREATE INDEX IF NOT EXISTS idx_artifacts_tags
+ON artifacts USING gin (tags);
+
+CREATE INDEX IF NOT EXISTS idx_artifacts_search
+ON artifacts USING gin (search_document);
+
+CREATE INDEX IF NOT EXISTS idx_artifacts_expires_at
+ON artifacts (expires_at)
+WHERE expires_at IS NOT NULL;
+
