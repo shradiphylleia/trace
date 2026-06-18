@@ -5,6 +5,12 @@ teams across can upload stack traces, logs, API payloads, validation reports and
 ```text
 http://localhost:8080/t/abc123
 ```
+# Preview:
+<img width="1708" height="848" alt="Screenshot 2026-06-17 165535" src="https://github.com/user-attachments/assets/f4fad1d4-7bdd-4cef-a3d1-74bf91d1126b" />
+<img width="1647" height="783" alt="Screenshot 2026-06-17 165522" src="https://github.com/user-attachments/assets/03e5f545-8a00-4efa-8a2e-26b205aece50" />
+<img width="1682" height="881" alt="Screenshot 2026-06-17 165514" src="https://github.com/user-attachments/assets/fab853ea-4eee-4ff9-878e-18b850e733a6" />
+<img width="1887" height="902" alt="Screenshot 2026-06-17 173100" src="https://github.com/user-attachments/assets/5005c41b-2434-481f-a898-d9aae740b9c3" />
+
 
 ## Features
 - Upload text or binary artifacts with metadata.
